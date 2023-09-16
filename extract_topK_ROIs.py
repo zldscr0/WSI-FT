@@ -51,7 +51,7 @@ if __name__ == '__main__':
     from models.vib_clam_wsi import CLAM_SB
     model_dict = {'n_classes': 2}
     model_wsi = CLAM_SB(**model_dict)
-    ckpt_path = 'clam_camelyon16_ostu_res50_pretrain_vib_s2021'
+    ckpt_path = 'clam_cam16_res50_vib_s1'
     ckpt_path = os.path.join('./results',ckpt_path,'s_0_checkpoint.pt')
     ckpt = torch.load(ckpt_path)
     # load weights

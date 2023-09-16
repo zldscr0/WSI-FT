@@ -1,0 +1,7 @@
+label_frac : 1
+seed : 2
+k : 5
+task :  'task_1_tumor_vs_normal'
+val_frac : 0.1
+test_frac : 0.1
+csv : dataset_csv/label.csv

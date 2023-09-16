@@ -42,7 +42,7 @@ def main(args):
     folds = np.arange(start, end)
     print('folds:',folds)
     for i in folds:
-        seed_torch(args.seed+i)
+        seed_torch(args.seed)
         # pdb.set_trace()
         train_dataset, val_dataset, test_dataset = dataset.return_splits(from_id=False,
                 csv_path='{}/splits_{}.csv'.format(args.split_dir, i))
@@ -70,7 +70,7 @@ def main(args):
 parser = argparse.ArgumentParser(description='Configurations for WSI Training')
 parser.add_argument('--data_root_dir', type=str, default=None,
                     help='data directory')
-parser.add_argument('--max_epochs', type=int, default=400,
+parser.add_argument('--max_epochs', type=int, default=200,
                     help='maximum number of epochs to train (default: 200)')
 parser.add_argument('--lr', type=float, default=1e-4,
                     help='learning rate (default: 0.0001)')
@@ -120,15 +120,15 @@ args.lr = 1e-4
 args.weighted_sample =True
 args.inst_loss ="svm"
 args.task = "task_1_tumor_vs_normal"
-args.split_dir = "task_camelyon16/"
-args.csv_path = './dataset_csv/camelyon16.csv'
-args.data_root_dir = "./data_feat"
+args.split_dir = "split"
+args.csv_path = './dataset_csv/label.csv'
+args.data_root_dir = "../feat_dir"
 sub_feat_dir = 'Camelyon16_patch256_res50'
 args.max_epochs = 50
 args.reg = 1e-04
 args.use_drop_out = True
 args.bag_weight = 0.7
-args.seed = 2021
+args.seed = 1
 args.k = 5
 args.k_end = 5
 
@@ -172,17 +172,15 @@ if args.model_type in ['clam_sb', 'clam_mb']:
 print('\nLoad Dataset')
 
 if args.task == 'task_1_tumor_vs_normal':
-    args.n_classes=2
-    dataset = Generic_MIL_Dataset(
-                            csv_path = args.csv_path,
-                            data_dir = os.path.join(args.data_root_dir, sub_feat_dir),
-                            shuffle = False,
-                            seed = args.seed,
-                            print_info = True,
-                            label_dict={0: 0, 1: 1},
-                            patient_strat=False,
-                            ignore=[])
-
+    args.n_classes = 2
+    dataset = Generic_MIL_Dataset(csv_path='dataset_csv/label.csv',
+                                  data_dir=args.data_root_dir,
+                                  shuffle=False,
+                                  seed=args.seed,
+                                  print_info=True,
+                                  label_dict={'subtype_3': 0, 'subtype_4': 1},
+                                  patient_strat=False,
+                                  ignore=[])
 elif args.task == 'task_2_tumor_subtyping':
     args.n_classes=3
     dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/tumor_subtyping_dummy_clean.csv',

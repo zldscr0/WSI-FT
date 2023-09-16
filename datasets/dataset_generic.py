@@ -326,7 +326,7 @@ class Generic_MIL_Dataset(Generic_WSI_Classification_Dataset):
 		self.use_h5 = toggle
 
 	def __getitem__(self, idx):
-		slide_id = self.slide_data['slide_id'][idx]
+		slide_id = self.slide_data['slide_id'][idx].split('.svs')[0]
 		label = self.slide_data['label'][idx]
 		if type(self.data_dir) == dict:
 			source = self.slide_data['source'][idx]
