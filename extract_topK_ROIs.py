@@ -53,7 +53,7 @@ if __name__ == '__main__':
     model_wsi = CLAM_SB(**model_dict)
     ckpt_path = 'clam_cam16_res50_vib_s1'
     ckpt_path = os.path.join('./results',ckpt_path,'s_0_checkpoint.pt')
-    ckpt = torch.load(ckpt_path)
+    ckpt = torch.load(ckpt_path,map_location='cpu')
     # load weights
     model_wsi.load_state_dict(ckpt,strict=False)
     model_wsi.eval()

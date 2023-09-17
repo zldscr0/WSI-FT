@@ -1,0 +1,30 @@
+data_root_dir: ../feat_dir
+max_epochs: 50
+lr: !!float 1e-4
+label_frac: 1.0
+reg: !!float 1e-5
+seed: 1
+k: 5
+k_start: -1
+k_end: 5
+results_dir: ./results
+split_dir: split
+log_data: false
+testing: false
+early_stopping: true
+opt: adam
+drop_out: true
+bag_loss: ce
+model_type: clam_sb
+exp_code: colon
+weighted_sample: true
+model_size: small
+task: task_1_tumor_vs_normal
+no_inst_cluster: false
+inst_loss: svm
+subtyping: false
+bag_weight: 0.7
+vib: false
+B: 8
+csv_path: ./dataset_csv/label.csv
+

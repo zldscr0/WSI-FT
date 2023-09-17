@@ -2,13 +2,13 @@
 
 [TOC]
 
-TO-DO（update：20230916）
+TO-DO（Last update：20230917）
 
 - [x] 环境配置
 - [x] 数据集准备
 - [x] 代码复现
-- [ ] 整理代码结构
-- [ ] 补充截图
+- [ ] 整理代码结构（部分阶段未整理）
+- [ ] 补充部分结果
 - [ ] 绘图
 
 ---
@@ -38,7 +38,7 @@ Project
     common      # 文件夹，放置utilizes.py等文件
     datasets    # 文件夹，放置数据集的读取方式，写清楚各个数据集的.py文件
     models      # 文件夹，放置网络模型.py文件
-    scripts     # 文件夹，放置trian.sh, test.sh脚本文件
+    scripts     # 文件夹，放置train.sh, test.sh脚本文件
     README.md  
     environment.yml
     train.py
@@ -49,7 +49,26 @@ Project
 
 #### 数据集准备
 
+##### 本地数据集说明
+
 数据集使用的是省肿瘤项目当中的病理数据集(.svs文件)。（也可用公开的camyon16数据集）
+
+.svs图像存储位置：
+
+```
+/data/Colon/svs
+```
+
+切割并提取特征后的存储位置：
+
+```
+data/data_seg_patch  
+data/feat_dir
+```
+
+> 注：实际处理时切割并提取特征后的存储位置存在了整个code的上一级目录中。
+
+##### 数据集预处理
 
 Mostly folked from [CLAM](https://github.com/mahmoodlab/CLAM), with minor modification. So just follow the [docs](https://github.com/mahmoodlab/CLAM/tree/master/docs) to perform baseline, or with following steps:
 
@@ -85,20 +104,24 @@ CUDA_VISIBLE_DEVICES=2 python3 extract_topK_ROIs.py --data_h5_dir ../data_seg_pa
 
 #### 环境配置
 
-```
-pip install -r ./requirments.txt
-```
+CUDA:11.6
 
-new_env
+创建新环境
 
 ```
-conda create --name new_env
+conda create --name p39 python=3.9
 ```
 
 激活
 
 ```
-conda activate new_env
+conda activate p39
+```
+
+安装依赖项
+
+```
+pip install -r ./requirments.txt
 ```
 
 下载GPU版本的pytorch(CUDA版本=11.6)，2G左右，较快。
@@ -115,9 +138,23 @@ print(torch.__version__)
 print(torch.version.cuda)
 ```
 
+如果遇到`topk`的`module found error`报错：
+
+```bash
+git clone https://github.com/oval-group/smooth-topk.git
+cd smooth-topk
+python setup.py install#此处报错则替换为 pip install .
+```
+
 base中装载了2.0.1的cpu版本的pytorch，new_env中安装GPU版pytorch成功
 
 ![image-20230916183128012](C:\Users\hanabi\AppData\Roaming\Typora\typora-user-images\image-20230916183128012.png)
+
+注：环境里用`pip`安装，如果安装到了外面的`python`里，在`pip`指令前加一个`python -m`
+
+```python
+python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu116
+```
 
 ---
 
@@ -125,28 +162,34 @@ base中装载了2.0.1的cpu版本的pytorch，new_env中安装GPU版pytorch成�
 
 ##### Stage1
 
+```
+bash scripts/train.sh
+```
+
 训练过程中截图：
 
 ![image-20230916182958798](C:\Users\hanabi\AppData\Roaming\Typora\typora-user-images\image-20230916182958798.png)
 
+最优模型：
 
+训练集上的准确率达到了97.62%
 
-
+```
+Epoch: 47, train_loss: 0.2090, train_clustering_loss:  0.0592, train_error: 0.0238
+```
 
 ##### Stage-1b (variational IB training):
 
 ```
-bash vib_train.sh
+bash scripts/vib_train.sh
 ```
-
-
 
 ##### Stage-2 (wsi-finetuning with topK):
 
 1. Collecting top-k patches of WSI by inference vib model, save in pt form.
 
 ```
-bash extract_topk_rois.sh
+bash scripts/extract_topk_rois.sh
 ```
 
 
@@ -154,10 +197,8 @@ bash extract_topk_rois.sh
 1. Perform end-to-end training.
 
 ```
-bash e2e_train.sh
+bash scripts/e2e_train.sh
 ```
-
-
 
 ##### Stage-3 (training wsi head with fine-tuned patch backbone):
 
@@ -167,7 +208,13 @@ Now you can use finetuned patch bakcbone in stage-2 to generate patch features, 
 
 #### test
 
-待截图
+##### stage-1
+
+同CLAM框架的结果格式，此图显示了5折交叉的测试结果
+
+![image-20230917103319888](C:\Users\hanabi\AppData\Roaming\Typora\typora-user-images\image-20230917103319888.png)
+
+验证集和测试集的最高准确率达到了**1**和**0.733**。
 
 ---
 

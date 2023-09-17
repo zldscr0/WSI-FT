@@ -1,1 +1,0 @@
-CUDA_VISIBLE_DEVICES=2 python3 extract_topK_ROIs.py --data_h5_dir ../data_seg_patch --csv_path ../data_seg_patch/process_list_autogen.csv --feat_dir ../feat_dir --patch_dir ../data_seg_patch --data_slide_dir data --batch_size 512 --slide_ext .svs
